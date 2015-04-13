@@ -17,6 +17,24 @@ class PostsController < ApplicationController
     @post = Post.new
   end
 
+  # create keywords
+  def new_keyword (name)
+    @keyword = Keyword.new(name) 
+  end
+
+  def search
+    # receives the keyword and tags
+    new_keyword(params[:keyword])
+    # metodo de buscaNoBanco
+    #createPost
+    fdcdytctdc
+      
+    # render :text => "Informed keyword was: " + @keyword
+    respond_to do |format|
+        format.html { redirect_to posts_results_path, notice: 'Post was successfully created.' }
+        # format.json { render :show, status: :created, location: @post }
+      end
+  end
   # GET /posts/1/edit
   def edit
   end

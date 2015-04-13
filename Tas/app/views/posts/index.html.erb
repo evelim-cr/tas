@@ -1,6 +1,6 @@
-<h1>Listing posts</h1>
+<h1>Social Networks keyword search</h1>
 
-<table>
+<!-- <table>
   <thead>
     <tr>
       <th>Text</th>
@@ -27,9 +27,23 @@
         <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
-  </tbody>
+  </tbody> -->
 </table>
 
 <br>
 
-<%= link_to 'New Post', new_post_path %>
+<!--<%= link_to 'New Post', new_post_path %> -->
+
+<%= form_tag("/posts/search", method: "get") do %>
+  <%= label_tag(:keyword, "Keyword:") %>
+  <%= text_field_tag(:keyword) %>
+  <%= submit_tag("Search") %>
+<% end %>
+
+<!-- <form name="search" action="posts/search"
+  method="post"> 
+  Keyword:<br>
+  <input type="text" name="keywords"> 
+  <input type="submit" value="Search">
+</form>
+ -->
