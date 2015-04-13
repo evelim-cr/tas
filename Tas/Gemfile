@@ -31,6 +31,9 @@ gem 'youtube_it'
 gem 'redditkit', '~> 1.0.1'
 gem 'twitter'
 
+# Gema que possibilita uso de chaves compostas no activeRecord
+gem 'composite_primary_keys', '=7.0.11'
+
 # Better errors
 group :development do
   gem "better_errors"

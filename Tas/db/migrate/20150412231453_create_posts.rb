@@ -5,8 +5,8 @@ class CreatePosts < ActiveRecord::Migration
       t.integer :frequency
       t.string :author
       t.datetime :postDate
-      t.references :source_id
-      t.references :query_id
+      t.references :source
+      t.references :query
 
       t.timestamps
     end

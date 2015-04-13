@@ -24,8 +24,8 @@ ActiveRecord::Schema.define(version: 20150412231453) do
     t.integer  "frequency"
     t.string   "author"
     t.datetime "postDate"
-    t.integer  "source_id_id"
-    t.integer  "query_id_id"
+    t.integer  "source_id"
+    t.integer  "query_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
