@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  text: MyText
+  frequency: 1
+  author: MyString
+  postDate: 2015-04-12 20:14:53
+  source_id: 
+  query_id: 
+
+two:
+  text: MyText
+  frequency: 1
+  author: MyString
+  postDate: 2015-04-12 20:14:53
+  source_id: 
+  query_id: 
