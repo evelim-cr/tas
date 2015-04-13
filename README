@@ -1,0 +1,9 @@
+rails g model Tag name:string
+rails g model Keyword name:string
+rails g model Query queryId:int keyword:reference tag:reference 
+rails g model Source name:string
+rails g migration Tag name:string
+rails g migration Keyword name:string
+rails g migration Query queryId:int keyword:reference tag:reference 
+rails g migration Source name:string
+rails g scaffold Post text:text frequency:integer author:string postDate:datetime source_id:reference query_id:reference
