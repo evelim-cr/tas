@@ -1,9 +1,9 @@
 class CreateQueries < ActiveRecord::Migration
   def change
     create_table :queries, :id => false do |t|
-      t.integer :query_id
-      t.references :keyword
-      t.references :tag
+      t.integer :query_id, :null => false
+      t.references :keyword, :null => false
+      t.references :tag, :null => false
 
       t.timestamps
     end
