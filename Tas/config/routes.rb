@@ -1,14 +1,15 @@
 Rails.application.routes.draw do
   resources :posts
-
+  resources :queries, except: :show
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'posts#index'
+  root 'queries#index'
+  get 'queries/search' => 'queries#search'
 
-  get 'posts/search' => 'posts#search'
-  get 'posts/results' => 'posts#results'
+  # get 'posts/search' => 'posts#search'
+  # get 'posts/results' => 'posts#results'
 
 
   # Example of regular route:
