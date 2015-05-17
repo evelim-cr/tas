@@ -8,3 +8,11 @@
 Source.create(name: 'Reddit')
 Source.create(name: 'Youtube')
 Source.create(name: 'Twitter')
+
+k=Keyword.create(name: 'dog')
+t1= Tag.create(name: 'doge')
+t2= Tag.create(name: 'xiuaua')
+t3= Tag.create(name: 'tita')
+Query.create(query_id: 1, keyword: k, tag: t1)
+Query.create(query_id: 2, keyword: k, tag: t2)
+Query.create(query_id: 3, keyword: k, tag: t3)
