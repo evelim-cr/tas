@@ -1,6 +1,5 @@
 class Query < ActiveRecord::Base
-	self.primary_keys = :tag_id, :keyword_id, :query_id
-	belongs_to :tag
+	has_and_belongs_to_many :tags, :join_table => "queries_tags"
 	belongs_to :keyword
-	has_many :posts, :foreign_key => [:tag_id, :keyword_id, :query_id]
+	has_many :posts
 end
