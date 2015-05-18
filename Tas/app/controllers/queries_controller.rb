@@ -1,5 +1,6 @@
 class QueriesController < ApplicationController
   before_action :set_query, only: [:show, :edit, :update, :destroy]
+  #before_action :get_tags, only: [:reddit_search]
 
   # GET /queries
   # GET /queries.json
@@ -61,6 +62,44 @@ class QueriesController < ApplicationController
     end
   end
 
+  def reddit_search(query = Query.first, limit = 2)
+    # Create an anonymous reddit user
+    client = RedditKit::Client.new
+    # Create the query string to be used in search
+    query_string = query.keyword.name + " AND (" + query.tags.pluck(:name).join(" OR ") + ")"
+    results = client.search(query_string, {:limit => limit})
+    # Source name must match source name created on db/seeds.rb
+    src = Source.where(:name => "reddit".capitalize).first
+    posts = []
+    results.each do |r|
+      # Search local database to check if a post with the same ID was already extracted
+      already_created = Post.where(:origin_id => r.id)
+      # If this is a new post, create it
+      if already_created.empty?
+        post = Post.new()
+        post.text = r.selftext
+        post.author = r.author
+        post.frequency = r.score
+        post.postDate = r.created_at
+        post.origin_id = r.id
+        post.source = src
+        post.query = query
+        post.save!
+      else
+        # Else fetch the post from database
+        post = already_created
+      end
+      posts << post
+    end
+    posts
+    #returns 'posts'
+    respond_to do |format|
+      format.html { redirect_to queries_url, alert: 'Reddit search executed successfully!!!' }
+      format.json { head :no_content }
+    end
+  end
+
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_query

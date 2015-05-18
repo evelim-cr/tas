@@ -14,6 +14,4 @@ t1= Tag.create(name: 'doge')
 t2= Tag.create(name: 'xiuaua')
 t3= Tag.create(name: 'tita')
 
-Query.create(keyword: k, tags: [t1])
-Query.create(keyword: k, tags: [t2])
-Query.create(keyword: k, tags: [t3])
+Query.create(keyword: k, tags: [t1, t2, t3])
