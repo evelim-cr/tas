@@ -1,6 +1,6 @@
-<h1>Listing queries</h1>
+<!-- <h1>Social Networks keyword search</h1> -->
 
-<table>
+<!-- <table>
   <thead>
     <tr>
       <th colspan="3"></th>
@@ -20,4 +20,40 @@
 
 <br>
 
-<%= link_to 'New Query', new_query_path %>
+<%= link_to 'New Query', new_query_path %> -->
+<head>
+<title>TAZ</title>
+</head>
+<body>
+
+  <h1>Social Networks keyword search</h1>
+
+  <%= form_tag("/queries/search", method: "get") do %>
+    <!-- KEYWORD -->
+    <p><%= label_tag(:name, "Keyword:") %>
+    <%= text_field_tag(:name) %>
+    </p>
+    <!-- FONTES -->
+    <h3> Fonte de Busca:</h3>
+    <input  checked = "checked"  type = "checkbox"  id = "post_validated"  name = "source1[validated]"  value = "1">  Twitter</input>
+    <input  checked = "checked"  type = "checkbox"  id = "post_validated"  name = "source2[validated]"  value = "1">  Youtube </input>
+    <input  checked = "checked"  type = "checkbox"  id = "post_validated"  name = "source3[validated]"  value = "1">  Reddit </input>
+    <!-- TAGS -->
+    <h3> TAGS:</h3>
+    <p><%= label_tag(:tag1, "TAG 1:") %>
+    <%= text_field_tag(:tag1) %>
+    </p>
+    <p><%= label_tag(:tag2, "TAG 2:") %>
+    <%= text_field_tag(:tag2) %>
+    </p>
+    <p><%= label_tag(:tag3, "TAG 3:") %>
+    <%= text_field_tag(:tag3) %>
+    </p>
+    <%= submit_tag("Search") %>
+  <% end %>  
+
+
+
+
+</body>
+

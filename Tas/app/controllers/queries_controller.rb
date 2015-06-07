@@ -18,11 +18,38 @@ class QueriesController < ApplicationController
     @query = Query.new
   end
 
+  # create keywords
+  def new_keyword (name)
+    if !(Keyword.exists?(:name => name))
+      @keyword = Keyword.new(name: name)
+      return @keyword.save
+    end 
+  end
+
+  def search
+    # @tag1 = tag.new
+    # @tag2 = tag.new
+    # @tag3 = tag.new
+
+    if params[:name].nil? || params[:name].empty?
+      redirect_to root_path, notice: "Keyword can't be blank!"
+    else
+      @k1 = Keyword.getKeyword(params[:name])
+      # render :text => "Informed keyword was: " + @k1
+      respond_to do |format|
+          format.html { redirect_to queries_results_path, notice: 'Keyword criada: '+@k1.name }
+          format.json { render :show, status: :created, location: @post }
+      end         
+    end
+    # metodo de buscaNoBanco
+    # createPost 
+  end
+
   # GET /queries/1/edit
   def edit
   end
 
-  # POST /queries
+   # POST /queries
   # POST /queries.json
   def create
     @query = Query.new(query_params)

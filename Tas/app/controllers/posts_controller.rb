@@ -17,17 +17,17 @@ class PostsController < ApplicationController
     @post = Post.new
   end
 
-  # create keywords
-  def new_keyword (name)
-    @keyword = Keyword.new(name) 
-  end
+  # # create keywords
+  # def new_keyword (name)
+  #   @keyword = Keyword.new(name) 
+  # end
 
   def search
     # receives the keyword and tags
-    new_keyword(params[:keyword])
+    # new_keyword(params[:keyword])
     # metodo de buscaNoBanco
     #createPost
-    fdcdytctdc
+    # fdcdytctdc
       
     # render :text => "Informed keyword was: " + @keyword
     respond_to do |format|
