@@ -18,24 +18,25 @@ class QueriesController < ApplicationController
     @query = Query.new
   end
 
-  # create keywords
-  def new_keyword (name)
-    if !(Keyword.exists?(:name => name))
-      @keyword = Keyword.new(name: name)
-      return @keyword.save
-    end 
+  def create_tag(tag)
+    if !(tag.empty? )
+      @tags << Tag.getTag(tag)
+    end   
   end
 
   def search
-    if params
+    if params[:keyword].nil? || params[:keyword].empty?
       redirect_to root_path, notice: "Keyword can't be blank!"
     else
-      @k1 = Keyword.getKeyword(params[:name])
-      # render :text => "Informed keyword was: " + @k1
-      
       @tags = []
-      @tags << Tag.find(1) << Tag.find(2) << Tag.find(3)
+      @k1 = Keyword.getKeyword(params[:keyword])
+      create_tag(params[:tag1])
+      create_tag(params[:tag2])
+      create_tag(params[:tag3])
+      # render :text => "Informed keyword was: " + @k1      
+      # @tags << Tag.find(1) << Tag.find(2) << Tag.find(3)
       @query = Query.getQuery(@k1,@tags)
+      hahahha
 
       respond_to do |format|
           format.html { redirect_to queries_results_path, notice: 'Keyword criada: '+@k1.name }

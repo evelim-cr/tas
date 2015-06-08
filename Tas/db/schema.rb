@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150412231453) do
+ActiveRecord::Schema.define(version: 20150518003521) do
 
   create_table "keywords", force: true do |t|
     t.string   "name"
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 20150412231453) do
     t.integer  "query_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "origin_id"
   end
 
   create_table "queries", id: false, force: true do |t|
@@ -39,6 +40,11 @@ ActiveRecord::Schema.define(version: 20150412231453) do
   end
 
   add_index "queries", ["query_id", "keyword_id", "tag_id"], name: "by_query_composite_id", unique: true
+
+  create_table "queries_tags", id: false, force: true do |t|
+    t.integer "query_id"
+    t.integer "tag_id"
+  end
 
   create_table "sources", force: true do |t|
     t.string   "name"
