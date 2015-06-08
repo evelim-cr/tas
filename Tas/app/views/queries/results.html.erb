@@ -1,1 +1,33 @@
-<h1>Boa Tarde 2</h1>
+<h1>Search results</h1>
+<% fdsafdsa
+if @boatarde %>
+<table>
+  <thead>
+    <tr>
+      <th>Text</th>
+      <th>Frequency</th>
+      <th>Author</th>
+      <th>Postdate</th>
+      <th>Source</th>
+      <th>Query</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @posts.each do |post| %>
+      <tr>
+        <td><%= post.text %></td>
+        <td><%= post.frequency %></td>
+        <td><%= post.author %></td>
+        <td><%= post.postDate %></td>
+        <td><%= post.source_id %></td>
+        <td><%= post.query_id %></td>
+        <td><%= link_to 'view', post %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<% else %>
+  No results found
+<% end %>

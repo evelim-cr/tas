@@ -19,7 +19,7 @@ class QueriesController < ApplicationController
   end
 
   def create_tag(tag)
-    if !(tag.empty? )
+    if !(tag.empty?)
       @tags << Tag.getTag(tag)
     end   
   end
@@ -28,20 +28,16 @@ class QueriesController < ApplicationController
     if params[:keyword].nil? || params[:keyword].empty?
       redirect_to root_path, notice: "Keyword can't be blank!"
     else
-      @tags = []
       @k1 = Keyword.getKeyword(params[:keyword])
+      @tags = []
       create_tag(params[:tag1])
       create_tag(params[:tag2])
       create_tag(params[:tag3])
       # render :text => "Informed keyword was: " + @k1      
       # @tags << Tag.find(1) << Tag.find(2) << Tag.find(3)
       @query = Query.getQuery(@k1,@tags)
-      hahahha
-
-      respond_to do |format|
-          format.html { redirect_to queries_results_path, notice: 'Keyword criada: '+@k1.name }
-          format.json { render :show, status: :created, location: @post }
-      end         
+      @boatarde = reddit_search(@query)
+      redirect_to queries_results_path
     end
   end
 
@@ -93,6 +89,7 @@ class QueriesController < ApplicationController
     # Create an anonymous reddit user
     client = RedditKit::Client.new
     # Create the query string to be used in search
+    query = Query.find(query)
     query_string = query.keyword.name + " AND (" + query.tags.pluck(:name).join(" OR ") + ")"
     results = client.search(query_string, {:limit => limit})
     # Source name must match source name created on db/seeds.rb
@@ -111,7 +108,7 @@ class QueriesController < ApplicationController
         post.origin_id = r.id
         post.source = src
         post.query = query
-        post.save!
+        post.save
       else
         # Else fetch the post from database
         post = already_created
@@ -119,10 +116,6 @@ class QueriesController < ApplicationController
       posts << post
     end
     return posts
-    # respond_to do |format|
-    #   format.html { redirect_to queries_url, alert: 'Reddit search executed successfully!!!' }
-    #   format.json { head :no_content }
-    # end
   end
 
   
