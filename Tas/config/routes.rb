@@ -8,8 +8,7 @@ Rails.application.routes.draw do
   root 'queries#index'
   get 'queries/search' => 'queries#search'
   get 'queries/results' => 'queries#results'
-  
-  get 'queries/reddit' => 'queries#reddit_search'
+  # get 'queries/reddit' => 'queries#reddit_search'
 
   # get 'posts/search' => 'posts#search'
   # get 'posts/results' => 'posts#results'

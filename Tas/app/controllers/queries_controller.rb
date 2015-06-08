@@ -27,22 +27,21 @@ class QueriesController < ApplicationController
   end
 
   def search
-    # @tag1 = tag.new
-    # @tag2 = tag.new
-    # @tag3 = tag.new
-
-    if params[:name].nil? || params[:name].empty?
+    if params
       redirect_to root_path, notice: "Keyword can't be blank!"
     else
       @k1 = Keyword.getKeyword(params[:name])
       # render :text => "Informed keyword was: " + @k1
+      
+      @tags = []
+      @tags << Tag.find(1) << Tag.find(2) << Tag.find(3)
+      @query = Query.getQuery(@k1,@tags)
+
       respond_to do |format|
           format.html { redirect_to queries_results_path, notice: 'Keyword criada: '+@k1.name }
           format.json { render :show, status: :created, location: @post }
       end         
     end
-    # metodo de buscaNoBanco
-    # createPost 
   end
 
   # GET /queries/1/edit
@@ -118,12 +117,11 @@ class QueriesController < ApplicationController
       end
       posts << post
     end
-    posts
-    #returns 'posts'
-    respond_to do |format|
-      format.html { redirect_to queries_url, alert: 'Reddit search executed successfully!!!' }
-      format.json { head :no_content }
-    end
+    return posts
+    # respond_to do |format|
+    #   format.html { redirect_to queries_url, alert: 'Reddit search executed successfully!!!' }
+    #   format.json { head :no_content }
+    # end
   end
 
   
