@@ -6,7 +6,6 @@ class CreatePosts < ActiveRecord::Migration
       t.string :author
       t.datetime :postDate
       t.references :source, :null => false
-      t.references :query, :null => false
 
       t.timestamps
     end

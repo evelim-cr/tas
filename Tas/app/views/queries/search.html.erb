@@ -1,5 +1,5 @@
 <h1>Search results</h1>
-<% if @query_results %>
+<% if @query %>
 <table>
   <thead>
     <tr>
@@ -17,18 +17,18 @@
   </thead>
 
   <tbody>
-    <% @query_results.first.each do |post| %>
+    <% @query.posts.each do |post| %>
       <tr>
         <td><%= post.text %></td>
         <td><%= post.frequency %></td>
         <td><%= post.author %></td>
         <td><%= post.postDate %></td>
         <td><%= post.source.name %></td>
-        <td><%= post.query.keyword.name %></td>
-        <% post.query.tags.each do |tag| %>
+        <td><%= @query.keyword.name %></td>
+        <% @query.tags.each do |tag| %>
           <td> <%= tag.name %> </td>
         <% end %>
-        <% (3-post.query.tags.count).times do |tag| %>
+        <% (3-@query.tags.count).times do |tag| %>
           <td></td>
         <% end %>
         <td><%= link_to 'view', post %></td>

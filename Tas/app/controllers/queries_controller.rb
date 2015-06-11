@@ -24,25 +24,6 @@ class QueriesController < ApplicationController
     end   
   end
 
-  def search
-    if params[:keyword].nil? || params[:keyword].empty?
-      redirect_to root_path, notice: "Keyword can't be blank!"
-    else
-      @k1 = Keyword.getKeyword(params[:keyword])
-      @tags = []
-      create_tag(params[:tag1])
-      create_tag(params[:tag2])
-      create_tag(params[:tag3])
-
-      @query = Query.getQuery(@k1,@tags)
-      @query_results = reddit_search(@query) 
-    end
-  end
-
-  def results
-    fdsafdsa
-    @query_results 
-  end
 
   # GET /queries/1/edit
   def edit
@@ -88,21 +69,50 @@ class QueriesController < ApplicationController
     end
   end
 
+  # GET /queries/search
+  def search
+    if params[:keyword].nil? || params[:keyword].empty?
+      redirect_to root_path, notice: "Keyword can't be blank!"
+    else
+      @k1 = Keyword.getKeyword(params[:keyword])
+      @tags = []
+      create_tag(params[:tag1])
+      create_tag(params[:tag2])
+      create_tag(params[:tag3])
+
+      @query = Query.getQuery(@k1,@tags)
+      reddit_search(@query)
+      # youtube_search(@query)
+      # twitter_search(@query)
+    end
+  end
+
   def reddit_search(query = Query.first, limit = 2)
-    # Create an anonymous reddit user
+    # query = Query.find(query)
+    # Cria um usuário anônimo no Reddit
     client = RedditKit::Client.new
-    # Create the query string to be used in search
-    query = Query.find(query)
-    query_string = query.keyword.name + " AND (" + query.tags.pluck(:name).join(" OR ") + ")"
+    # Cria a string a ser procurada no Reddit
+    query_string = "selftext:" + query.keyword.name
+    if query.tags.count > 0 
+       query_string << " AND (selftext:" << query.tags.pluck(:name).join(" OR selftext:") << ")"
+      end
+    fffdsa
+    # Realiza a busca
     results = client.search(query_string, {:limit => limit})
-    # Source name must match source name created on db/seeds.rb
-    src = Source.where(:name => "reddit".capitalize).first
-    posts = []
+    # O nome da fonte de extração deve coincidir com o configurado em db/seeds.rb
+    src = Source.where(:name => "Reddit").first
     results.each do |r|
-      # Search local database to check if a post with the same ID was already extracted
-      already_created = Post.where(:origin_id => r.id)
-      # If this is a new post, create it
-      if already_created.empty?
+      # Procura no banco de dados local por um post com o mesmo ID do que foi extraído
+      already_created = Post.where(:origin_id => r.id).first
+      # Se encontrar
+      if already_created.present?
+        # Apenas indica que este post foi encontrado pela query passada
+        if !already_created.queries.exists?(query)
+          already_created.queries << query
+          already_created.save
+        end
+      else
+        # Se não, cria um novo post e também associa à esta query
         post = Post.new()
         post.text = r.selftext
         post.author = r.author
@@ -110,18 +120,12 @@ class QueriesController < ApplicationController
         post.postDate = r.created_at
         post.origin_id = r.id
         post.source = src
-        post.query = query
+        post.queries << query
         post.save
-      else
-        # Else fetch the post from database
-        post = already_created
       end
-      posts << post
     end
-    return posts
   end
 
-  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_query

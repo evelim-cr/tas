@@ -28,7 +28,7 @@
 
   <h1>Social Networks keyword search</h1>
 
-  <%= form_tag("/queries/search", method: "get") do %>
+  <%= form_tag("/queries/search", method: "POST") do %>
     <!-- KEYWORD -->
     <p><%= label_tag(:keyword, "Keyword:") %>
     <%= text_field_tag(:keyword) %>
