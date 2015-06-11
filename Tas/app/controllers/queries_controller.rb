@@ -36,8 +36,11 @@ class QueriesController < ApplicationController
       # render :text => "Informed keyword was: " + @k1      
       # @tags << Tag.find(1) << Tag.find(2) << Tag.find(3)
       @query = Query.getQuery(@k1,@tags)
-      @boatarde = reddit_search(@query)
-      redirect_to queries_results_path
+      @posts = reddit_search(@query)
+      respond_to do |format|
+          format.html { redirect_to posts_path }
+          format.json { render :show, status: :created, location: @post }
+      end  
     end
   end
 

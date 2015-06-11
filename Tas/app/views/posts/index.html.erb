@@ -1,6 +1,6 @@
-<h1>Social Networks keyword search</h1>
-
-<!-- <table>
+<h1>Search results</h1>
+<% if @posts %>
+<table>
   <thead>
     <tr>
       <th>Text</th>
@@ -9,7 +9,7 @@
       <th>Postdate</th>
       <th>Source</th>
       <th>Query</th>
-      <th colspan="3"></th>
+      <th></th>
     </tr>
   </thead>
 
@@ -22,29 +22,11 @@
         <td><%= post.postDate %></td>
         <td><%= post.source_id %></td>
         <td><%= post.query_id %></td>
-        <td><%= link_to 'Show', post %></td>
-        <td><%= link_to 'Edit', edit_post_path(post) %></td>
-        <td><%= link_to 'Destroy', post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'view', post %></td>
       </tr>
     <% end %>
-  </tbody> -->
+  </tbody>
 </table>
-
-<br>
-
-<!--<%= link_to 'New Post', new_post_path %> -->
-
-<%= form_tag("/posts/search", method: "get") do %>
-  <%= label_tag(:keyword, "Keyword:") %>
-  <%= text_field_tag(:keyword) %>
-  <%= submit_tag("Search") %>
+<% else %>
+  No results found
 <% end %>
-
-
-<!-- <form name="search" action="posts/search"
-  method="post"> 
-  Keyword:<br>
-  <input type="text" name="keywords"> 
-  <input type="submit" value="Search">
-</form>
- -->
