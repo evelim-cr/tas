@@ -1,5 +1,5 @@
 <h1>Search results</h1>
-<% if @posts %>
+<% if @query_results %>
 <table>
   <thead>
     <tr>
@@ -8,7 +8,7 @@
       <th>Author</th>
       <th>Postdate</th>
       <th>Source</th>
-      <th>Query</th>
+      <!--<th>Query</th>-->
       <th></th>
     </tr>
   </thead>
@@ -20,8 +20,8 @@
         <td><%= post.frequency %></td>
         <td><%= post.author %></td>
         <td><%= post.postDate %></td>
-        <td><%= post.source_id %></td>
-        <td><%= post.query_id %></td>
+        <td><%= post.source.name %></td>
+        <!--<td><%= post.query_id %></td> -->
         <td><%= link_to 'view', post %></td>
       </tr>
     <% end %>

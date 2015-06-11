@@ -7,8 +7,7 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'queries#index'
   get 'queries/search' => 'queries#search'
-  get 'queries/results' => 'queries#results'
-  # get 'queries/reddit' => 'queries#reddit_search'
+  # get 'queries/results' => 'queries#results'
 
   # get 'posts/search' => 'posts#search'
   # get 'posts/results' => 'posts#results'

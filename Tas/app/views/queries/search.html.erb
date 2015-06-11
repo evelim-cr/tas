@@ -1,1 +1,41 @@
-<h1>Boa Tarde 1</h1>
+<h1>Search results</h1>
+<% if @query_results %>
+<table>
+  <thead>
+    <tr>
+      <th>Text</th>
+      <th>Frequency</th>
+      <th>Author</th>
+      <th>Postdate</th>
+      <th>Source</th>
+      <th>Keyword</th>
+      <th>Tag1</th>
+      <th>Tag2</th>
+      <th>Tag3</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @query_results.first.each do |post| %>
+      <tr>
+        <td><%= post.text %></td>
+        <td><%= post.frequency %></td>
+        <td><%= post.author %></td>
+        <td><%= post.postDate %></td>
+        <td><%= post.source.name %></td>
+        <td><%= post.query.keyword.name %></td>
+        <% post.query.tags.each do |tag| %>
+          <td> <%= tag.name %> </td>
+        <% end %>
+        <% (3-post.query.tags.count).times do |tag| %>
+          <td></td>
+        <% end %>
+        <td><%= link_to 'view', post %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<% else %>
+  No results found
+<% end %>

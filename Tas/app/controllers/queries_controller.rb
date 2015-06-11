@@ -33,22 +33,22 @@ class QueriesController < ApplicationController
       create_tag(params[:tag1])
       create_tag(params[:tag2])
       create_tag(params[:tag3])
-      # render :text => "Informed keyword was: " + @k1      
-      # @tags << Tag.find(1) << Tag.find(2) << Tag.find(3)
+
       @query = Query.getQuery(@k1,@tags)
-      @posts = reddit_search(@query)
-      respond_to do |format|
-          format.html { redirect_to posts_path }
-          format.json { render :show, status: :created, location: @post }
-      end  
+      @query_results = reddit_search(@query) 
     end
+  end
+
+  def results
+    fdsafdsa
+    @query_results 
   end
 
   # GET /queries/1/edit
   def edit
   end
 
-   # POST /queries
+  # POST /queries
   # POST /queries.json
   def create
     @query = Query.new(query_params)
