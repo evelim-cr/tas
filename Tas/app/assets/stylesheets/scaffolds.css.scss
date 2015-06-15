@@ -19,13 +19,9 @@ pre {
 }
 
 a {
-  color: #fff;
-  &:visited {
-    color: #666;
-  }
+  color: #2c3e50;
   &:hover {
-    color: #fff;
-    background-color: #fff;
+    color: #34495e;
   }
 }
 
@@ -38,6 +34,7 @@ div {
 h1{
   font-size: 3em !important;
 }
+
 h3{
   font-size: 2em !important;
 }

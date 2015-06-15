@@ -96,8 +96,7 @@ class QueriesController < ApplicationController
     query_string = "selftext:" + query.keyword.name
     if query.tags.count > 0 
        query_string << " AND (selftext:" << query.tags.pluck(:name).join(" OR selftext:") << ")"
-      end
-    fffdsa
+    end
     # Realiza a busca
     results = client.search(query_string, {:limit => limit})
     # O nome da fonte de extração deve coincidir com o configurado em db/seeds.rb
