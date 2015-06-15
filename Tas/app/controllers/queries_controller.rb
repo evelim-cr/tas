@@ -6,6 +6,7 @@ class QueriesController < ApplicationController
   # GET /queries.json
   def index
     @queries = Query.all
+    @sources = Source.all
   end
 
   # GET /queries/1

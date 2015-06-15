@@ -1,5 +1,5 @@
 body {
-  background-color: #058;
+  background-color: #ecf0f1;
   color: #333;
   font-family: verdana, arial, helvetica, sans-serif;
   font-size: 13px;
@@ -33,6 +33,18 @@ div {
   &.field, &.actions {
     margin-bottom: 10px;
   }
+}
+
+h1{
+  font-size: 3em !important;
+}
+h3{
+  font-size: 2em !important;
+}
+
+.botao{
+  background-color:transparent;
+  border:0;
 }
 
 #notice {

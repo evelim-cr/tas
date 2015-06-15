@@ -1,59 +1,42 @@
-<!-- <h1>Social Networks keyword search</h1> -->
-
-<!-- <table>
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @queries.each do |query| %>
-      <tr>
-        <td><%= link_to 'Show', query %></td>
-        <td><%= link_to 'Edit', edit_query_path(query) %></td>
-        <td><%= link_to 'Destroy', query, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New Query', new_query_path %> -->
-<head>
-<title>TAZ</title>
-</head>
-<body>
-
+<div class="row">
+  <%= form_tag("/queries/search", method: "POST", :class => "col s10 offset-s2") do %>
   <h1>Social Networks keyword search</h1>
-
-  <%= form_tag("/queries/search", method: "POST") do %>
     <!-- KEYWORD -->
-    <p><%= label_tag(:keyword, "Keyword:") %>
-    <%= text_field_tag(:keyword) %>
-    </p>
+    <h3>Search for</h3>
+    <div class="row">
+      <div class="input-field col s8">
+        <%= label_tag(:keyword, "Keyword") %>
+        <%= text_field_tag(:keyword, nil,{:class => "validate", :required=>"required"}) %>
+      </div>
+    </div>
     <!-- FONTES -->
-    <h3> Fonte de Busca:</h3>
-    <input  checked = "checked"  type = "checkbox"  id = "post_validated"  name = "source1[validated]"  value = "1">  Twitter</input>
-    <input  checked = "checked"  type = "checkbox"  id = "post_validated"  name = "source2[validated]"  value = "1">  Youtube </input>
-    <input  checked = "checked"  type = "checkbox"  id = "post_validated"  name = "source3[validated]"  value = "1">  Reddit </input>
+    <h3>Sources</h3>
+    <% @sources.each do |src| %>
+        <%= check_box_tag(src.name, src.name, true, :class => "filled-in") %>
+        <%= label_tag(src.name, src.name, :class => "sources") %>
+    <% end %>
     <!-- TAGS -->
-    <h3> TAGS:</h3>
-    <p><%= label_tag(:tag1, "TAG 1:") %>
-    <%= text_field_tag(:tag1) %>
-    </p>
-    <p><%= label_tag(:tag2, "TAG 2:") %>
-    <%= text_field_tag(:tag2) %>
-    </p>
-    <p><%= label_tag(:tag3, "TAG 3:") %>
-    <%= text_field_tag(:tag3) %>
-    </p>
-    <%= submit_tag("Search") %>
-  <% end %>  
-
-
-
-
-</body>
-
+    <h3>TAGS</h3>
+    <div class="row">
+      <div class="input-field col s8">
+        <%= label_tag(:tag1, "TAG 1") %>
+        <%= text_field_tag(:tag1) %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s8">
+        <%= label_tag(:tag2, "TAG 2") %>
+        <%= text_field_tag(:tag2) %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s8">
+        <%= label_tag(:tag3, "TAG 3") %>
+        <%= text_field_tag(:tag3) %>
+      </div>
+    </div>
+    <%= button_tag(type: "submit", class: "btn waves-effect waves-light") do %>
+      Search <i class="mdi-content-send right"></i>
+    <% end %>
+  <% end %>
+</div>
