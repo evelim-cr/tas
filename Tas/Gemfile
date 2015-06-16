@@ -31,6 +31,9 @@ gem 'youtube_it'
 gem 'redditkit', '~> 1.0.1'
 gem 'twitter'
 
+# Análise se sentimentos
+gem 'sentiwordnet_ruby'
+
 # Better errors
 group :development do
   gem "better_errors"

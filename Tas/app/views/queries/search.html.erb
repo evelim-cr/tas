@@ -15,31 +15,44 @@
     </p>
 
     <% unless @query.posts.empty? %>
-    <table class="striped hoverable">
-      <thead>
-        <tr>
-          <th>Text</th>
-          <th>Frequency</th>
-          <th>Author</th>
-          <th>Postdate</th>
-          <th>Source</th>
-          <th></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% @query.posts.each do |post| %>
+      <h3>Sentiment statistics:</h3>
+      <% values = @sentiments.keys 
+        values.sort!
+        len = values.length 
+        med = (values[(len-1)/2] + values[len/2]) / 2.0
+      %>
+      <p> 
+        SUM: <%= sum = values.reduce(:+).to_f%> |
+        AVG: <%= avg = sum/values.size%> |
+        MAX: <%= max = values.max%> |
+        AVG: <%= avg = values.min%> |
+        MED: <%= med %> 
+      </p>
+      <table class="striped hoverable">
+        <thead>
           <tr>
-            <td class="post-text"><%= post.text %></td>
-            <td><%= post.frequency %></td>
-            <td><%= post.author %></td>
-            <td><%= post.postDate %></td>
-            <td><%= post.source.name %></td>
-            <td><%= link_to 'view', post %></td>
+            <th>Text</th>
+            <th>Frequency</th>
+            <th>Author</th>
+            <th>Postdate</th>
+            <th>Source</th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          <% @query.posts.each do |post| %>
+            <tr>
+              <td class="post-text"><%= post.text %></td>
+              <td><%= post.frequency %></td>
+              <td><%= post.author %></td>
+              <td><%= post.postDate %></td>
+              <td><%= post.source.name %></td>
+              <td><%= link_to 'view', post %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     <% else %>
       No results found
     <% end %>

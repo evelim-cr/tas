@@ -85,6 +85,8 @@ class QueriesController < ApplicationController
       reddit_search(@query)
       # youtube_search(@query)
       # twitter_search(@query)
+
+      @sentiments = posts_analyze(@query.posts)
     end
   end
 
@@ -125,6 +127,20 @@ class QueriesController < ApplicationController
       end
     end
   end
+
+  def posts_analyze(posts)
+    # Carregando os valores padrão da base SentiWordNet
+    SentiWordNet.load_defaults
+    # Instanciando um analizador do SentiWordNet
+    analyzer = SentiWordNet.new
+
+    posts_sentiments = Hash.new
+    posts.each do |post|
+      posts_sentiments[post.id] = analyzer.get_sentiment(post.text)
+    end
+    return posts_sentiments
+  end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
