@@ -1,41 +1,47 @@
-<h1>Search results</h1>
-<% if @query %>
-<table>
-  <thead>
-    <tr>
-      <th>Text</th>
-      <th>Frequency</th>
-      <th>Author</th>
-      <th>Postdate</th>
-      <th>Source</th>
-      <th>Keyword</th>
-      <th>Tag1</th>
-      <th>Tag2</th>
-      <th>Tag3</th>
-      <th></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @query.posts.each do |post| %>
-      <tr>
-        <td><%= post.text %></td>
-        <td><%= post.frequency %></td>
-        <td><%= post.author %></td>
-        <td><%= post.postDate %></td>
-        <td><%= post.source.name %></td>
-        <td><%= @query.keyword.name %></td>
+<div class="row">
+  <div class="input-field col s8 offset-s2">
+    <h1>Search results</h1>
+    <h3>Looking for:</h3>
+    <p>Keyword: <%= @query.keyword.name %></p>
+    <p>
+      <% unless @query.tags.empty? %>
+        <%= "Tag".pluralize(@query.tags.count) %>:
         <% @query.tags.each do |tag| %>
-          <td> <%= tag.name %> </td>
+          <%= tag.name %>
         <% end %>
-        <% (3-@query.tags.count).times do |tag| %>
-          <td></td>
+      <% else %>
+        No tags specified.
+      <% end %>
+    </p>
+
+    <% unless @query.posts.empty? %>
+    <table class="striped hoverable">
+      <thead>
+        <tr>
+          <th>Text</th>
+          <th>Frequency</th>
+          <th>Author</th>
+          <th>Postdate</th>
+          <th>Source</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @query.posts.each do |post| %>
+          <tr>
+            <td class="post-text"><%= post.text %></td>
+            <td><%= post.frequency %></td>
+            <td><%= post.author %></td>
+            <td><%= post.postDate %></td>
+            <td><%= post.source.name %></td>
+            <td><%= link_to 'view', post %></td>
+          </tr>
         <% end %>
-        <td><%= link_to 'view', post %></td>
-      </tr>
+      </tbody>
+    </table>
+    <% else %>
+      No results found
     <% end %>
-  </tbody>
-</table>
-<% else %>
-  No results found
-<% end %>
+  </div>
+</div>

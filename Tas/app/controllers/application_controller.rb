@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
   # Pagina 404
-  config.action_dispatch.rescue_responses.merge!(
+  config.action_dispatch(
     'MyCustomException' => :not_found
   )
 end
