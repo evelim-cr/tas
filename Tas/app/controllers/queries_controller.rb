@@ -136,7 +136,7 @@ class QueriesController < ApplicationController
 
     posts_sentiments = Hash.new
     posts.each do |post|
-      posts_sentiments[post.id] = analyzer.get_sentiment(post.text)
+      posts_sentiments[post.id] = analyzer.get_score(post.text).round(4)
     end
     return posts_sentiments
   end

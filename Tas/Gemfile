@@ -34,6 +34,9 @@ gem 'twitter'
 # Análise se sentimentos
 gem 'sentiwordnet_ruby'
 
+# Funções estatísticas
+gem 'descriptive-statistics'
+
 # Better errors
 group :development do
   gem "better_errors"
