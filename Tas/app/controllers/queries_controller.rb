@@ -61,6 +61,32 @@ class QueriesController < ApplicationController
     end
   end
 
+  def TwitterSearch
+    keyword="linux"
+    tags=["windows"]
+    tags.size>0 ? searchTerm="#{keyword} #{tags.first}" : searchTerm=keyword
+    if tags.size>1
+      tags[1..-1].each { |t|
+        searchTerm=searchTerm+" OR #{t}"
+      }
+    end
+    puts searchTerm
+    client = configTwitterAPI("eSSsknWpxWla5j95AhE4Ui3yj","UICqhsGSLkTKV6hgnrVteWocqqknttEmJk5ZbVhMAxRIi4duu5")
+    h = client.search("#{searchTerm} -rt", lang: "pt", count: 100, ).to_h
+    h[:statuses].each { |t|
+      puts t[:user][:screen_name]+" --- "+t[:text]
+      puts
+    }
+  end
+
+  def configTwitterAPI (consumer_key, consumer_secret)
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key    = consumer_key
+      config.consumer_secret = consumer_secret
+    end
+    return client
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_query
