@@ -1,0 +1,58 @@
+<div class="row">
+  <div class="input-field col s8 offset-s2">
+    <h1>Search results</h1>
+    <h3>Looking for:</h3>
+    <p>Keyword: <%= @query.keyword.name %></p>
+    <p>
+      <% unless @query.tags.empty? %>
+        <%= "Tag".pluralize(@query.tags.count) %>:
+        <% @query.tags.each do |tag| %>
+          <%= tag.name %>
+        <% end %>
+      <% else %>
+        No tags specified.
+      <% end %>
+    </p>
+
+    <% unless @query.posts.empty? %>
+      <h3>Sentiment statistics:</h3>
+      <% stats = DescriptiveStatistics::Stats.new(@sentiments.values) %>
+      <p> 
+        SUM: <%= sum = @sentiments.values.reduce(:+).to_f.round(2)%> |
+        AVG: <%= mean = stats.mean.round(2)%> |
+        MAX: <%= max = stats.max.round(2)%> |
+        MIN: <%= min = stats.min.round(2)%> |
+        MOD: <%= mode = ((stats.mode.round(2)) if !stats.mode.nil?) || "None"%> |
+        MED: <%= median = stats.median.round(2)%> |
+        SDV: <%= standard_deviation = stats.standard_deviation.round(2)%> 
+      </p>
+      <table class="striped hoverable">
+        <thead>
+          <tr>
+            <th>Text</th>
+            <th>Frequency</th>
+            <th>Author</th>
+            <th>Postdate</th>
+            <th>Source</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @query.posts.each do |post| %>
+            <tr>
+              <td class="post-text"><%= post.text %></td>
+              <td><%= post.frequency %></td>
+              <td><%= post.author %></td>
+              <td><%= post.postDate %></td>
+              <td><%= post.source.name %></td>
+              <td><%= link_to 'view', post %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      No results found
+    <% end %>
+  </div>
+</div>

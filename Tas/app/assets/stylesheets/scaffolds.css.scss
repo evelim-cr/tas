@@ -1,5 +1,5 @@
 body {
-  background-color: #058;
+  background-color: #ecf0f1;
   color: #333;
   font-family: verdana, arial, helvetica, sans-serif;
   font-size: 13px;
@@ -19,13 +19,9 @@ pre {
 }
 
 a {
-  color: #fff;
-  &:visited {
-    color: #666;
-  }
+  color: #2c3e50;
   &:hover {
-    color: #fff;
-    background-color: #fff;
+    color: #34495e;
   }
 }
 
@@ -33,6 +29,19 @@ div {
   &.field, &.actions {
     margin-bottom: 10px;
   }
+}
+
+h1{
+  font-size: 3em !important;
+}
+
+h3{
+  font-size: 2em !important;
+}
+
+.botao{
+  background-color:transparent;
+  border:0;
 }
 
 #notice {

@@ -1,10 +1,12 @@
 class QueriesController < ApplicationController
   before_action :set_query, only: [:show, :edit, :update, :destroy]
+  #before_action :get_tags, only: [:reddit_search]
 
   # GET /queries
   # GET /queries.json
   def index
     @queries = Query.all
+    @sources = Source.all
   end
 
   # GET /queries/1
@@ -16,6 +18,13 @@ class QueriesController < ApplicationController
   def new
     @query = Query.new
   end
+
+  def create_tag(tag)
+    if !(tag.empty?)
+      @tags << Tag.getTag(tag)
+    end   
+  end
+
 
   # GET /queries/1/edit
   def edit
@@ -61,7 +70,7 @@ class QueriesController < ApplicationController
     end
   end
 
-  def TwitterSearch
+  def twitter_search
     keyword="linux"
     tags=["windows"]
     tags.size>0 ? searchTerm="#{keyword} #{tags.first}" : searchTerm=keyword
@@ -71,7 +80,7 @@ class QueriesController < ApplicationController
       }
     end
     puts searchTerm
-    client = configTwitterAPI("eSSsknWpxWla5j95AhE4Ui3yj","UICqhsGSLkTKV6hgnrVteWocqqknttEmJk5ZbVhMAxRIi4duu5")
+    client = config_twitter_api("eSSsknWpxWla5j95AhE4Ui3yj","UICqhsGSLkTKV6hgnrVteWocqqknttEmJk5ZbVhMAxRIi4duu5")
     h = client.search("#{searchTerm} -rt", lang: "pt", count: 100, ).to_h
     h[:statuses].each { |t|
       puts t[:user][:screen_name]+" --- "+t[:text]
@@ -79,12 +88,83 @@ class QueriesController < ApplicationController
     }
   end
 
-  def configTwitterAPI (consumer_key, consumer_secret)
+  def config_twitter_api (consumer_key, consumer_secret)
     client = Twitter::REST::Client.new do |config|
       config.consumer_key    = consumer_key
       config.consumer_secret = consumer_secret
     end
     return client
+  end
+
+  # GET /queries/search
+  def search
+    if params[:keyword].nil? || params[:keyword].empty?
+      redirect_to root_path, notice: "Keyword can't be blank!"
+    else
+      @k1 = Keyword.getKeyword(params[:keyword])
+      @tags = []
+      create_tag(params[:tag1])
+      create_tag(params[:tag2])
+      create_tag(params[:tag3])
+
+      @query = Query.getQuery(@k1,@tags)
+      reddit_search(@query)
+      # youtube_search(@query)
+      # twitter_search(@query)
+
+      @sentiments = posts_analyze(@query.posts)
+    end
+  end
+
+  def reddit_search(query = Query.first, limit = 2)
+    # query = Query.find(query)
+    # Cria um usuário anônimo no Reddit
+    client = RedditKit::Client.new
+    # Cria a string a ser procurada no Reddit
+    query_string = "selftext:" + query.keyword.name
+    if query.tags.count > 0 
+       query_string << " AND (selftext:" << query.tags.pluck(:name).join(" OR selftext:") << ")"
+    end
+    # Realiza a busca
+    results = client.search(query_string, {:limit => limit})
+    # O nome da fonte de extração deve coincidir com o configurado em db/seeds.rb
+    src = Source.where(:name => "Reddit").first
+    results.each do |r|
+      # Procura no banco de dados local por um post com o mesmo ID do que foi extraído
+      already_created = Post.where(:origin_id => r.id).first
+      # Se encontrar
+      if already_created.present?
+        # Apenas indica que este post foi encontrado pela query passada
+        if !already_created.queries.exists?(query)
+          already_created.queries << query
+          already_created.save
+        end
+      else
+        # Se não, cria um novo post e também associa à esta query
+        post = Post.new()
+        post.text = r.selftext
+        post.author = r.author
+        post.frequency = r.score
+        post.postDate = r.created_at
+        post.origin_id = r.id
+        post.source = src
+        post.queries << query
+        post.save
+      end
+    end
+  end
+
+  def posts_analyze(posts)
+    # Carregando os valores padrão da base SentiWordNet
+    SentiWordNet.load_defaults
+    # Instanciando um analizador do SentiWordNet
+    analyzer = SentiWordNet.new
+
+    posts_sentiments = Hash.new
+    posts.each do |post|
+      posts_sentiments[post.id] = analyzer.get_score(post.text).round(4)
+    end
+    return posts_sentiments
   end
 
   private
