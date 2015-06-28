@@ -1,6 +1,6 @@
 <h1>Search results</h1>
-<% unless @query_results.empty? %>
-<table>
+<% unless @posts.empty? %>
+<table class="bordered">
   <thead>
     <tr>
       <th>Text</th>
@@ -21,7 +21,6 @@
         <td><%= post.author %></td>
         <td><%= post.postDate %></td>
         <td><%= post.source.name %></td>
-        <!--<td><%= post.query_id %></td> -->
         <td><%= link_to 'view', post %></td>
       </tr>
     <% end %>
