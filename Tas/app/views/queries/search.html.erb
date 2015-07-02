@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="input-field col s8 offset-s2">
+  <div class="input-field col s8 offset-s1">
     <h1>Search results</h1>
     <h3>Looking for:</h3>
     <p>Keyword: <%= @query.keyword.name %></p>
@@ -33,6 +33,7 @@
         <thead>
           <tr>
             <th>Text</th>
+            <th>Score</th>
             <th>Frequency</th>
             <th>Author</th>
             <th>Postdate</th>
@@ -45,6 +46,7 @@
           <% @query.posts.each do |post| %>
             <tr>
               <td class="post-text"><%= post.text %></td>
+              <td><%= @sentiments[post.id]%></td>
               <td><%= post.frequency %></td>
               <td><%= post.author %></td>
               <td><%= post.postDate %></td>
