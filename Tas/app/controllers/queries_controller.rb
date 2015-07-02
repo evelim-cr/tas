@@ -70,6 +70,45 @@ class QueriesController < ApplicationController
     end
   end
 
+  def twitter_search(query = Query.first, limit = 2)
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key    = "eSSsknWpxWla5j95AhE4Ui3yj"
+      config.consumer_secret = "UICqhsGSLkTKV6hgnrVteWocqqknttEmJk5ZbVhMAxRIi4duu5"
+    end
+
+    query.tags.count>0 ? searchTerm="#{query.keyword.name} #{query.tags.first.name}" : searchTerm=query.keyword.name
+    if query.tags.count>1
+      query.tags.each { |t|
+        searchTerm=searchTerm+" OR #{t.name}"
+      }
+    end
+
+    src = Source.where(:name => "Twitter").first
+    results = client.search("#{searchTerm} -rt", lang: "en", count: limit)
+    # máximo de 100 tweets por query
+    results.to_h[:statuses].each { |t|
+      already_created = Post.where(:origin_id => t[:id]).first
+      if already_created.present?
+        # Apenas indica que este post foi encontrado pela query passada
+        if !already_created.queries.exists?(query)
+          already_created.queries << query
+          already_created.save
+        end
+      else
+        # Se não, cria um novo post e também associa à esta query
+        post = Post.new()
+        post.text = t[:text]
+        post.author = t[:user][:screen_name]
+        post.frequency = t[:retweet_count]+1
+        post.postDate = t[:created_at]
+        post.origin_id = t[:id]
+        post.source = src
+        post.queries << query
+        post.save
+      end
+    }
+  end
+
   # GET /queries/search
   def search
     if params[:keyword].nil? || params[:keyword].empty?
@@ -84,7 +123,7 @@ class QueriesController < ApplicationController
       @query = Query.getQuery(@k1,@tags)
       reddit_search(@query)
       # youtube_search(@query)
-      # twitter_search(@query)
+      twitter_search(@query)
 
       @sentiments = posts_analyze(@query.posts)
     end
@@ -148,7 +187,6 @@ class QueriesController < ApplicationController
     end
     return posts_sentiments
   end
-
 
   private
     # Use callbacks to share common setup or constraints between actions.
