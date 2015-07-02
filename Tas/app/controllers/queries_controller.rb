@@ -90,7 +90,7 @@ class QueriesController < ApplicationController
     end
   end
 
-  def reddit_search(query = Query.first, limit = 100)
+  def reddit_search(query = Query.first, limit = 500)
     # query = Query.find(query)
     # Cria um usuário anônimo no Reddit
     client = RedditKit::Client.new
@@ -106,11 +106,11 @@ class QueriesController < ApplicationController
     results.each do |r|
       # Procura no banco de dados local por um post com o mesmo ID do que foi extraído
       already_created = Post.where(:origin_id => r.id).first
-      # Se encontrar
+      # Se encontrar a publicação remota no banco local
       if already_created.present?
         # Se o mesmo post foi alterado, atualiza seu texto e data
         if r.text != already_created.text
-          already_created.text = r.text
+          already_created.text = r.selftext
         end
         # Apenas indica que este post foi encontrado pela query passada
         if !already_created.queries.exists?(query)
@@ -134,13 +134,17 @@ class QueriesController < ApplicationController
 
   def posts_analyze(posts)
     # Carregando os valores padrão da base SentiWordNet
-    SentiWordNet.load_defaults
+    LongTextAnalyzer.load_defaults
     # Instanciando um analizador do SentiWordNet
-    analyzer = SentiWordNet.new
+    analyzer = LongTextAnalyzer.new
 
     posts_sentiments = Hash.new
     posts.each do |post|
-      posts_sentiments[post.id] = analyzer.get_score(post.text).round(4)
+      if analyzer.get_score(post.text)
+        posts_sentiments[post.id] = analyzer.get_score(post.text)
+      else
+        Post.delete(post.id)
+      end
     end
     return posts_sentiments
   end
