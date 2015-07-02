@@ -93,7 +93,7 @@ class QueriesController < ApplicationController
       total = @sentiments.count
 
       resume = {}
-      labels = ['muito positivas', 'positivas', 'pouco positivas', 'pouco negativas', 'negativas', 'muito negativas']
+      labels = ['Very positive', 'positive', 'rather positive', 'rather negatives', 'negatives', 'Very negative']
       resume[labels[0]] = (@sentiments.values.select{ |d| d >= 0.5}.count.to_f/total*100).round(2)
       resume[labels[1]] = (@sentiments.values.select{ |d| d >= 0.25 && d < 0.5}.count.to_f/total*100).round(2)
       resume[labels[2]] = (@sentiments.values.select{ |d| d >= 0 && d < 0.25}.count.to_f/total*100).round(2)
@@ -101,15 +101,15 @@ class QueriesController < ApplicationController
       resume[labels[4]] = (@sentiments.values.select{ |d| d >= -0.5 && d < -0.25}.count.to_f/total*100).round(2)
       resume[labels[5]] = (@sentiments.values.select{ |d| d < -0.5}.count.to_f/total*100).round(2)
       @chart = LazyHighCharts::HighChart.new('pie') do |f|
-        f.chart({:defaultSeriesType=>"pie" , :margin=> [50, 200, 60, 170]} )
-        f.series(:type=> 'pie',:name=> 'Total consumption', 
+        f.chart({:defaultSeriesType=>"pie" , :margin=> [50, 200, 60, 170], } )
+        f.series(:type=> 'pie', 
                 :data=> [
-                  {:name => labels[0], :y => resume[labels[0]], :color => "red"},
-                  {:name => labels[1], :y => resume[labels[1]], :color => "red"},
-                  {:name => labels[2], :y => resume[labels[2]], :color => "red"},
-                  {:name => labels[3], :y => resume[labels[3]], :color => "red"},
-                  {:name => labels[4], :y => resume[labels[4]], :color => "red"},
-                  {:name => labels[5], :y => resume[labels[5]], :color => "red"}
+                  {:name => labels[0], :y => resume[labels[0]], :color => "#1abc9c"},
+                  {:name => labels[1], :y => resume[labels[1]], :color => "#2ecc71"},
+                  {:name => labels[2], :y => resume[labels[2]], :color => "#bdc3c7"},
+                  {:name => labels[3], :y => resume[labels[3]], :color => "#7f8c8d"},
+                  {:name => labels[4], :y => resume[labels[4]], :color => "#e74c3c"},
+                  {:name => labels[5], :y => resume[labels[5]], :color => "#c0392b"}
                 ],
                 :center=> [100, 80], :size=> 100, :showInLegend=> false)
         f.options[:title][:text] = "Scores distribution"
@@ -120,12 +120,13 @@ class QueriesController < ApplicationController
           :dataLabels=>{
             :enabled=>true,
             :color=>"black",
+            :format=>'<b>{point.name}</b>',
             :style=>{
               :font=>"13px Trebuchet MS, Verdana, sans-serif"
             }
           }
         })
-        
+        f.tooltip(:pointFormat=> '<b>{point.percentage:.1f}%</b>')                
       end
     end
   end
