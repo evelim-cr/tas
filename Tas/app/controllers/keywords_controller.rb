@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class KeywordsController < ApplicationController
   before_action :set_keyword, only: [:show, :edit, :update, :destroy]
 
