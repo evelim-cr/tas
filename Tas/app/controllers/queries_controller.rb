@@ -90,14 +90,14 @@ class QueriesController < ApplicationController
     end
   end
 
-  def reddit_search(query = Query.first, limit = 2)
+  def reddit_search(query = Query.first, limit = 100)
     # query = Query.find(query)
     # Cria um usuário anônimo no Reddit
     client = RedditKit::Client.new
     # Cria a string a ser procurada no Reddit
     query_string = "selftext:" + query.keyword.name
     if query.tags.count > 0 
-       query_string << " AND (selftext:" << query.tags.pluck(:name).join(" OR selftext:") << ")"
+       query_string << " AND (selftext:" << query.tags.pluck(:name).join(" OR selftext:") << " nsfw:no)"
     end
     # Realiza a busca
     results = client.search(query_string, {:limit => limit})
