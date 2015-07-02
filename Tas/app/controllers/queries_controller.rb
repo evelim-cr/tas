@@ -108,6 +108,10 @@ class QueriesController < ApplicationController
       already_created = Post.where(:origin_id => r.id).first
       # Se encontrar
       if already_created.present?
+        # Se o mesmo post foi alterado, atualiza seu texto e data
+        if r.text != already_created.text
+          already_created.text = r.text
+        end
         # Apenas indica que este post foi encontrado pela query passada
         if !already_created.queries.exists?(query)
           already_created.queries << query
