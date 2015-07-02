@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class QueriesController < ApplicationController
   before_action :set_query, only: [:show, :edit, :update, :destroy]
   #before_action :get_tags, only: [:reddit_search]
@@ -89,7 +90,61 @@ class QueriesController < ApplicationController
       twitter_search(@query)
 
       @sentiments = posts_analyze(@query.posts)
+      total = @sentiments.count
+
+      resume = {}
+      labels = ['muito positivas', 'positivas', 'pouco positivas', 'pouco negativas', 'negativas', 'muito negativas']
+      resume[labels[0]] = (@sentiments.values.select{ |d| d >= 0.5}.count.to_f/total*100).round(2)
+      resume[labels[1]] = (@sentiments.values.select{ |d| d >= 0.25 && d < 0.5}.count.to_f/total*100).round(2)
+      resume[labels[2]] = (@sentiments.values.select{ |d| d >= 0 && d < 0.25}.count.to_f/total*100).round(2)
+      resume[labels[3]] = (@sentiments.values.select{ |d| d >= -0.25 && d < 0}.count.to_f/total*100).round(2)
+      resume[labels[4]] = (@sentiments.values.select{ |d| d >= -0.5 && d < -0.25}.count.to_f/total*100).round(2)
+      resume[labels[5]] = (@sentiments.values.select{ |d| d < -0.5}.count.to_f/total*100).round(2)
+      @chart = LazyHighCharts::HighChart.new('pie') do |f|
+        f.chart({:defaultSeriesType=>"pie" , :margin=> [50, 200, 60, 170]} )
+        f.series(:type=> 'pie',:name=> 'Total consumption', 
+                :data=> [
+                  {:name => labels[0], :y => resume[labels[0]], :color => "red"},
+                  {:name => labels[1], :y => resume[labels[1]], :color => "red"},
+                  {:name => labels[2], :y => resume[labels[2]], :color => "red"},
+                  {:name => labels[3], :y => resume[labels[3]], :color => "red"},
+                  {:name => labels[4], :y => resume[labels[4]], :color => "red"},
+                  {:name => labels[5], :y => resume[labels[5]], :color => "red"}
+                ],
+                :center=> [100, 80], :size=> 100, :showInLegend=> false)
+        f.options[:title][:text] = "Scores distribution"
+        f.legend(:layout=> 'vertical',:style=> {:left=> 'auto', :bottom=> 'auto',:right=> '50px',:top=> '100px'}) 
+        f.plot_options(:pie=>{
+          :allowPointSelect=>true, 
+          :cursor=>"pointer" , 
+          :dataLabels=>{
+            :enabled=>true,
+            :color=>"black",
+            :style=>{
+              :font=>"13px Trebuchet MS, Verdana, sans-serif"
+            }
+          }
+        })
+        
+      end
     end
+  end
+
+  def posts_analyze(posts)
+    # Carregando os valores padrão da base SentiWordNet
+    LongTextAnalyzer.load_defaults
+    # Instanciando um analizador do SentiWordNet
+    analyzer = LongTextAnalyzer.new
+
+    posts_sentiments = Hash.new
+    posts.each do |post|
+      if analyzer.get_score(post.text)
+        posts_sentiments[post.id] = analyzer.get_score(post.text)
+      else
+        Post.delete(post.id)
+      end
+    end
+    return posts_sentiments
   end
 
   def twitter_search(query, limit = 10)
@@ -104,7 +159,6 @@ class QueriesController < ApplicationController
         searchTerm=searchTerm+" OR #{t.name}"
       }
     end
-    
 
     src = Source.where(:name => "Twitter").first
     results = client.search("#{searchTerm} -rt", lang: "en", count: limit)
@@ -179,23 +233,6 @@ class QueriesController < ApplicationController
         end
       end
     end
-  end
-
-  def posts_analyze(posts)
-    # Carregando os valores padrão da base SentiWordNet
-    LongTextAnalyzer.load_defaults
-    # Instanciando um analizador do SentiWordNet
-    analyzer = LongTextAnalyzer.new
-
-    posts_sentiments = Hash.new
-    posts.each do |post|
-      if analyzer.get_score(post.text)
-        posts_sentiments[post.id] = analyzer.get_score(post.text)
-      else
-        Post.delete(post.id)
-      end
-    end
-    return posts_sentiments
   end
 
   private
