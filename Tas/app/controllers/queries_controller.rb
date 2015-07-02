@@ -125,7 +125,7 @@ class QueriesController < ApplicationController
           post.text = clean_text
           post.author = t[:user][:screen_name]
           post.frequency = t[:retweet_count]+1
-          post.postDate = t[:created_at]
+          post.post_date = t[:created_at]
           post.origin_id = t[:id]
           post.source = src
           post.queries << query
@@ -171,7 +171,7 @@ class QueriesController < ApplicationController
           post.text = clean_text
           post.author = r.author
           post.frequency = r.score
-          post.postDate = r.created_at
+          post.post_date = r.created_at
           post.origin_id = r.id
           post.source = src
           post.queries << query
