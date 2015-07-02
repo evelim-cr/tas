@@ -1,6 +1,7 @@
 <div class="row">
   <div class="input-field col s8 offset-s2">
     <h1>Search results</h1>
+    <%= high_chart("boatarde", @chart) %>
     <h3>Looking for:</h3>
     <p>Keyword: <%= @query.keyword.name %></p>
     <p>
@@ -17,19 +18,23 @@
     <% unless @query.posts.empty? %>
       <h3>Sentiment statistics:</h3>
       <% stats = DescriptiveStatistics::Stats.new(@sentiments.values) %>
-      <p> 
-        SUM: <%= sum = @sentiments.values.reduce(:+).to_f.round(2)%> |
-        AVG: <%= mean = stats.mean.round(2)%> |
-        MAX: <%= max = stats.max.round(2)%> |
-        MIN: <%= min = stats.min.round(2)%> |
-        MOD: <%= mode = ((stats.mode.round(2)) if !stats.mode.nil?) || "None"%> |
-        MED: <%= median = stats.median.round(2)%> |
+      <p><%= @sentiments.count %> posts were able to be analyzed </p>
+      <p>SUM: <%= sum = @sentiments.values.reduce(:+).to_f.round(2)%></p>
+      <p>
+        AVG: <%= mean = stats.mean.round(2)%> &#8226;
+        MAX: <%= max = stats.max.round(2)%> &#8226;
+        MIN: <%= min = stats.min.round(2)%> 
+      </p>
+      <p>
+        MOD: <%= mode = ((stats.mode.round(2)) if !stats.mode.nil?) || "None"%> &#8226;
+        MED: <%= median = stats.median.round(2)%> &#8226;
         SDV: <%= standard_deviation = stats.standard_deviation.round(2)%> 
       </p>
       <table class="striped hoverable">
         <thead>
           <tr>
             <th>Text</th>
+            <th>Score</th>
             <th>Frequency</th>
             <th>Author</th>
             <th>Postdate</th>
@@ -42,9 +47,10 @@
           <% @query.posts.each do |post| %>
             <tr>
               <td class="post-text"><%= post.text %></td>
+              <td><%= @sentiments[post.id]%></td>
               <td><%= post.frequency %></td>
               <td><%= post.author %></td>
-              <td><%= post.postDate %></td>
+              <td><%= post.post_date.strftime("%d/%m/%Y %H:%I:%S") %></td>
               <td><%= post.source.name %></td>
               <td><%= link_to 'view', post %></td>
             </tr>

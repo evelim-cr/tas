@@ -4,7 +4,7 @@ class CreatePosts < ActiveRecord::Migration
       t.text :text, :null => false
       t.integer :frequency
       t.string :author
-      t.datetime :postDate
+      t.datetime :post_date
       t.references :source, :null => false
 
       t.timestamps

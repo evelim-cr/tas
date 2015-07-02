@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class Query < ActiveRecord::Base
 	has_and_belongs_to_many :tags, :join_table => "queries_tags"
 	has_and_belongs_to_many :posts, :join_table => "queries_posts"
