@@ -83,10 +83,10 @@ class QueriesController < ApplicationController
       create_tag(params[:tag2])
       create_tag(params[:tag3])
 
-      @query = Query.first
-      # reddit_search(@query)
+      @query = Query.getQuery(@k1,@tags)
+      reddit_search(@query, 100)
+      twitter_search(@query, 100)
       # youtube_search(@query)
-      # twitter_search(@query)
 
       @sentiments = posts_analyze(@query.posts)
       @chart = create_chart(@sentiments)
@@ -102,10 +102,10 @@ class QueriesController < ApplicationController
 
     posts_sentiments = Hash.new
     posts.each do |post|
-      if analyzer.get_score(post.text)
-        posts_sentiments[post.id] = analyzer.get_score(post.text)
-      else
+      if analyzer.get_score(post.text).nil?
         Post.delete(post.id)
+      else
+        posts_sentiments[post.id] = analyzer.get_score(post.text)
       end
     end
     return posts_sentiments

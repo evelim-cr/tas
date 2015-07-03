@@ -1,14 +1,14 @@
 <div class="row">
-  <div class="input-field col s8 offset-s2">
+  <div class="input-field col s10 offset-s1">
     <h1>Search results</h1>
     <%= high_chart("boatarde", @chart) %>
     <h3>Looking for:</h3>
-    <p>Keyword: <%= @query.keyword.name %></p>
+    <p>Keyword: <span class="word keyword"><%= @query.keyword.name %></span></p>
     <p>
       <% unless @query.tags.empty? %>
         <%= "Tag".pluralize(@query.tags.count) %>:
         <% @query.tags.each do |tag| %>
-          <%= tag.name %>
+          <span class="word tags"><%= tag.name %></span>
         <% end %>
       <% else %>
         No tags specified.
