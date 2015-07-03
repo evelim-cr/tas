@@ -72,45 +72,6 @@ class QueriesController < ApplicationController
     end
   end
 
-  def twitter_search(query = Query.first, limit = 2)
-    client = Twitter::REST::Client.new do |config|
-      config.consumer_key    = "eSSsknWpxWla5j95AhE4Ui3yj"
-      config.consumer_secret = "UICqhsGSLkTKV6hgnrVteWocqqknttEmJk5ZbVhMAxRIi4duu5"
-    end
-
-    query.tags.count>0 ? searchTerm="#{query.keyword.name} #{query.tags.first.name}" : searchTerm=query.keyword.name
-    if query.tags.count>1
-      query.tags.each { |t|
-        searchTerm=searchTerm+" OR #{t.name}"
-      }
-    end
-
-    src = Source.where(:name => "Twitter").first
-    results = client.search("#{searchTerm} -rt", lang: "en", count: limit)
-    # máximo de 100 tweets por query
-    results.to_h[:statuses].each { |t|
-      already_created = Post.where(:origin_id => t[:id]).first
-      if already_created.present?
-        # Apenas indica que este post foi encontrado pela query passada
-        if !already_created.queries.exists?(query)
-          already_created.queries << query
-          already_created.save
-        end
-      else
-        # Se não, cria um novo post e também associa à esta query
-        post = Post.new()
-        post.text = t[:text]
-        post.author = t[:user][:screen_name]
-        post.frequency = t[:retweet_count]+1
-        post.postDate = t[:created_at]
-        post.origin_id = t[:id]
-        post.source = src
-        post.queries << query
-        post.save
-      end
-    }
-  end
-
   # GET /queries/search
   def search
     if params[:keyword].nil? || params[:keyword].empty?
@@ -122,50 +83,14 @@ class QueriesController < ApplicationController
       create_tag(params[:tag2])
       create_tag(params[:tag3])
 
-      @query = Query.getQuery(@k1,@tags)
-      reddit_search(@query)
+      @query = Query.first
+      # reddit_search(@query)
       # youtube_search(@query)
-      twitter_search(@query)
+      # twitter_search(@query)
 
       @sentiments = posts_analyze(@query.posts)
-      total = @sentiments.count
-
-      resume = {}
-      labels = ['Very positive', 'positive', 'rather positive', 'rather negatives', 'negatives', 'Very negative']
-      resume[labels[0]] = (@sentiments.values.select{ |d| d >= 0.5}.count.to_f/total*100).round(2)
-      resume[labels[1]] = (@sentiments.values.select{ |d| d >= 0.25 && d < 0.5}.count.to_f/total*100).round(2)
-      resume[labels[2]] = (@sentiments.values.select{ |d| d >= 0 && d < 0.25}.count.to_f/total*100).round(2)
-      resume[labels[3]] = (@sentiments.values.select{ |d| d >= -0.25 && d < 0}.count.to_f/total*100).round(2)
-      resume[labels[4]] = (@sentiments.values.select{ |d| d >= -0.5 && d < -0.25}.count.to_f/total*100).round(2)
-      resume[labels[5]] = (@sentiments.values.select{ |d| d < -0.5}.count.to_f/total*100).round(2)
-      @chart = LazyHighCharts::HighChart.new('pie') do |f|
-        f.chart({:defaultSeriesType=>"pie" , :margin=> [50, 200, 60, 170], } )
-        f.series(:type=> 'pie', 
-                :data=> [
-                  {:name => labels[0], :y => resume[labels[0]], :color => "#1abc9c"},
-                  {:name => labels[1], :y => resume[labels[1]], :color => "#2ecc71"},
-                  {:name => labels[2], :y => resume[labels[2]], :color => "#bdc3c7"},
-                  {:name => labels[3], :y => resume[labels[3]], :color => "#7f8c8d"},
-                  {:name => labels[4], :y => resume[labels[4]], :color => "#e74c3c"},
-                  {:name => labels[5], :y => resume[labels[5]], :color => "#c0392b"}
-                ],
-                :center=> [100, 80], :size=> 100, :showInLegend=> false)
-        f.options[:title][:text] = "Scores distribution"
-        f.legend(:layout=> 'vertical',:style=> {:left=> 'auto', :bottom=> 'auto',:right=> '50px',:top=> '100px'}) 
-        f.plot_options(:pie=>{
-          :allowPointSelect=>true, 
-          :cursor=>"pointer" , 
-          :dataLabels=>{
-            :enabled=>true,
-            :color=>"black",
-            :format=>'<b>{point.name}</b>',
-            :style=>{
-              :font=>"13px Trebuchet MS, Verdana, sans-serif"
-            }
-          }
-        })
-        f.tooltip(:pointFormat=> '<b>{point.percentage:.1f}%</b>')                
-      end
+      @chart = create_chart(@sentiments)
+      
     end
   end
 
@@ -272,6 +197,44 @@ class QueriesController < ApplicationController
         end
       end
     end
+  end
+
+  def create_chart(sents, round = 2)
+    total = sents.count
+    resume = {}
+    labels = ['Very positive', 'positive', 'rather positive', 'rather negatives', 'negatives', 'Very negative']
+
+    resume[labels[0]] = (sents.values.select{ |d| d >= 0.5}.count.to_f/total*100).round(round)
+    resume[labels[1]] = (sents.values.select{ |d| d >= 0.25 && d < 0.5}.count.to_f/total*100).round(round)
+    resume[labels[2]] = (sents.values.select{ |d| d >= 0 && d < 0.25}.count.to_f/total*100).round(round)
+    resume[labels[3]] = (sents.values.select{ |d| d >= -0.25 && d < 0}.count.to_f/total*100).round(round)
+    resume[labels[4]] = (sents.values.select{ |d| d >= -0.5 && d < -0.25}.count.to_f/total*100).round(round)
+    resume[labels[5]] = (sents.values.select{ |d| d < -0.5}.count.to_f/total*100).round(round)
+
+    @chart = LazyHighCharts::HighChart.new('pie') { |f|
+      f.chart({ defaultSeriesType: "pie" ,  margin: [50, 200, 50, 200]} )
+      f.series( type: 'pie', 
+               data: [
+                { name: labels[0], y: resume[labels[0]], color: "#1abc9c"},
+                { name: labels[1], y: resume[labels[1]], color: "#2ecc71"},
+                { name: labels[2], y: resume[labels[2]], color: "#bdc3c7"},
+                { name: labels[3], y: resume[labels[3]], color: "#7f8c8d"},
+                { name: labels[4], y: resume[labels[4]], color: "#e74c3c"},
+                { name: labels[5], y: resume[labels[5]], color: "#c0392b"}
+              ], size: '100%')
+      f.options[:title][:text] = "Scores distribution"
+      f.legend(:layout=> 'horizontal',:style=> {:left=> 'auto', :bottom=> 'auto'}) 
+      f.plot_options(pie: {
+                    allowPointSelect: true, 
+                    cursor: 'pointer',
+                    dataLabels: {
+                      enabled: false
+                    },
+                    showInLegend: true
+      })
+      f.tooltip(pointFormat: '<b>{point.percentage:.1f}%</b>')
+    }
+    @chart
   end
 
   private
